@@ -138,6 +138,43 @@ func TestIsEndOfForwardSlash(t *testing.T) {
 	}
 }
 
+func TestExtFuncs(t *testing.T) {
+	items := []D{
+		{
+			"id":   1,
+			"name": "GoKeep",
+		},
+		{
+			"id":   2,
+			"name": "llgoer",
+		},
+		{
+			"id":   3,
+			"name": "GKTemplate",
+		},
+	}
+
+	data := D{
+		"info":  "Template engine for GoKeep(GK)，GoKeep模板引擎",
+		"items": items,
+	}
+
+	var funcs = make(map[string]TagFunc)
+
+	funcs["test"] = func(tag *GKTag, data *D) string {
+		name := tag.GetAttribute("name")
+		return "string from testtag name is:" + name
+	}
+
+	ExtFuncs(&funcs)
+
+	rs, err := ParseFile("./testdata/tpl_extfuncs.htm", data)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	fmt.Println("[TestExtFuncs]result=", rs)
+}
+
 // go test -bench=. -benchtime=3s -run=none -count=3 -benchmem
 // v1:25885 ns/op
 // v2:13993 ns/op

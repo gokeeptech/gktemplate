@@ -19,7 +19,7 @@ import (
 
 const CharToLow = true  // 是否将属性名称统一转换成小写
 const TagMaxLen = 64    // 标签最大字符宽度
-const Version = "0.0.3" // 版本号
+const Version = "0.0.4" // 版本号
 
 var (
 	defaultNameSpace = "gk" // 默认标签名称
@@ -140,16 +140,27 @@ var tplFileStorage templateFileStorage
 // 处理Tag的函数
 type TagFunc func(tag *GKTag, data *D) string
 
-var TagFuncs map[string]TagFunc // 模板函数
+var tagFuncs map[string]TagFunc // 模板函数
 
 // 初始化模板函数
 func init() {
 	tplStorage.Items = make(map[string]*GKTemplate)
 	tplFileStorage.Items = make(map[string]*string)
 
-	TagFuncs = make(map[string]TagFunc)
-	TagFuncs["field"] = TagField
-	TagFuncs["range"] = TagRange
+	tagFuncs = make(map[string]TagFunc)
+	tagFuncs["field"] = TagField
+	tagFuncs["range"] = TagRange
+}
+
+// 支持模板自定义扩展函数
+func ExtFuncs(funcs *map[string]TagFunc) {
+	for fname, ff := range *funcs {
+		_, ok := tagFuncs[fname]
+		if ok {
+			panic(fmt.Sprintf("[GKTemplate]tag:%s exists", fname))
+		}
+		tagFuncs[fname] = ff
+	}
 }
 
 // 一个模板结构体
@@ -522,7 +533,7 @@ func ParseStringWithNameSpace(tplstr *string, data D, nameSpace, tagStart, tagEn
 	// 替换模板转换内容
 
 	for i := 0; i < gktp.Count; i++ {
-		tagfunc, ok := TagFuncs[gktp.CTags[i].TagName]
+		tagfunc, ok := tagFuncs[gktp.CTags[i].TagName]
 		if ok {
 			gktp.CTags[i].IsReplace = true
 			gktp.CTags[i].TagValue = tagfunc(gktp.CTags[i], &data)
@@ -537,7 +548,7 @@ func ParseStringWithNameSpace(tplstr *string, data D, nameSpace, tagStart, tagEn
 
 	// go func() {
 	// 	for i := 0; i < gktp.Count; i++ {
-	// 		tagfunc, ok := TagFuncs[gktp.CTags[i].TagName]
+	// 		tagfunc, ok := tagFuncs[gktp.CTags[i].TagName]
 	// 		if ok {
 	// 			tagFuncChans <- tagFuncChan{
 	// 				Idx:     i,
