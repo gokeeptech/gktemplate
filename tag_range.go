@@ -32,7 +32,7 @@ func TagRange(tag *GKTag, data *D) string {
 			if ok {
 				resultString += string(gktp.SourceString[nextTagEnd : nextTagEnd+gktp.CTags[i].StartPos-nextTagEnd])
 
-				switch v := rs.(type) { //v表示b1 接口转换成Bag对象的值
+				switch v := rs.(type) {
 				case string:
 					resultString += v
 				case int:

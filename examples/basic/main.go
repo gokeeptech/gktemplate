@@ -10,23 +10,13 @@ import (
 )
 
 func main() {
-	// 使用扩展函数
-	var funcs = make(map[string]gktpl.TagFunc)
-
-	funcs["test"] = func(tag *gktpl.GKTag, data *gktpl.D) string {
-		name := tag.GetAttribute("name")
-		return "string from testtag name is:" + name
-	}
-
-	gktpl.ExtFuncs(&funcs)
-
 	// 加载模板
 	gktpl.LoadDir("./templates/*.htm")
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		data := gktpl.D{
 			"info": "Template engine for GoKeep(GK)，GoKeep模板引擎",
 		}
-
 		// 渲染模板
 		rs, err := gktpl.Parse("templates/simple.htm", data)
 		if err != nil {

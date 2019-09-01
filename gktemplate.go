@@ -27,6 +27,15 @@ var (
 	defaultTagEnd    = "}>" // 默认标签结束标记
 )
 
+// 设置标签
+func SetNameSpace(ns, start, end string) {
+	if ns != "" && start != "" && (start != end) {
+		defaultNameSpace = ns
+		defaultTagStart = start
+		defaultTagEnd = end
+	}
+}
+
 var (
 	reNameSpace = regexp.MustCompile("[a-zA-Z0-9]") // 标签名称规则
 	reTback     = regexp.MustCompile("[\\/ \t\r\n]")
