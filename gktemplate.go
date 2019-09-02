@@ -19,7 +19,7 @@ import (
 
 const CharToLow = true  // 是否将属性名称统一转换成小写
 const TagMaxLen = 64    // 标签最大字符宽度
-const Version = "0.0.4" // 版本号
+const Version = "0.0.5" // 版本号
 
 var (
 	defaultNameSpace = "gk" // 默认标签名称
