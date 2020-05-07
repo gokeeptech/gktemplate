@@ -1,4 +1,4 @@
-// Copyright 2019 The GoKeep Authors. All rights reserved.
+// Copyright 2020 The GoKeep Authors. All rights reserved.
 // license that can be found in the LICENSE file.
 
 // 模板引擎
@@ -138,7 +138,7 @@ func TestIsEndOfForwardSlash(t *testing.T) {
 	}
 }
 
-func TestExtFuncs(t *testing.T) {
+func TestExtLibs(t *testing.T) {
 	items := []D{
 		{
 			"id":   1,
@@ -159,20 +159,20 @@ func TestExtFuncs(t *testing.T) {
 		"items": items,
 	}
 
-	var funcs = make(map[string]TagFunc)
+	var funcs = make(map[string]TagLib)
 
 	funcs["test"] = func(tag *GKTag, data *D) string {
 		name := tag.GetAttribute("name")
 		return "string from testtag name is:" + name
 	}
 
-	ExtFuncs(&funcs)
+	ExtLibs(&funcs)
 
-	rs, err := ParseFile("./testdata/tpl_extfuncs.htm", data)
+	rs, err := ParseFile("./testdata/tpl_extlibs.htm", data)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	fmt.Println("[TestExtFuncs]result=", rs)
+	fmt.Println("[TestExtLibs]result=", rs)
 }
 
 // go test -bench=. -benchtime=3s -run=none -count=3 -benchmem

@@ -1,4 +1,4 @@
-// Copyright 2019 The GoKeep Authors. All rights reserved.
+// Copyright 2020 The GoKeep Authors. All rights reserved.
 // license that can be found in the LICENSE file.
 
 package main
@@ -23,7 +23,7 @@ func main() {
 	}
 
 	// 扩展自定义标签函数
-	gktpl.ExtFuncs(&funcs)
+	gktpl.ExtLibs(&funcs)
 
 	// 加载模板
 	gktpl.LoadDir("./templates/*.htm")

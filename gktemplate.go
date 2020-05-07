@@ -1,4 +1,4 @@
-// Copyright 2019 The GoKeep Authors. All rights reserved.
+// Copyright 2020 The GoKeep Authors. All rights reserved.
 // license that can be found in the LICENSE file.
 
 // 模板引擎
@@ -19,7 +19,7 @@ import (
 
 const CharToLow = true  // 是否将属性名称统一转换成小写
 const TagMaxLen = 64    // 标签最大字符宽度
-const Version = "0.0.5" // 版本号
+const Version = "0.0.6" // 版本号
 
 var (
 	defaultNameSpace = "gk" // 默认标签名称
@@ -147,8 +147,10 @@ var tplStorage templateStorage
 var tplFileStorage templateFileStorage
 
 // 处理Tag的函数
-type TagFunc func(tag *GKTag, data *D) string
+type TagLib func(tag *GKTag, data *D) string
+type TagFunc func(v *string, args ...interface{}) string
 
+var tagLibs map[string]TagLib   // 模板标签
 var tagFuncs map[string]TagFunc // 模板函数
 
 // 初始化模板函数
@@ -156,9 +158,24 @@ func init() {
 	tplStorage.Items = make(map[string]*GKTemplate)
 	tplFileStorage.Items = make(map[string]*string)
 
+	tagLibs = make(map[string]TagLib)
+	tagLibs["field"] = TagField
+	tagLibs["range"] = TagRange
+
 	tagFuncs = make(map[string]TagFunc)
-	tagFuncs["field"] = TagField
-	tagFuncs["range"] = TagRange
+	tagFuncs["ToUpper"] = FuncToUpper
+	tagFuncs["ToLower"] = FuncToLower
+}
+
+// 支持模板自定义扩展标签
+func ExtLibs(libs *map[string]TagLib) {
+	for fname, ff := range *libs {
+		_, ok := tagLibs[fname]
+		if ok {
+			panic(fmt.Sprintf("[GKTemplate]tag:%s exists", fname))
+		}
+		tagLibs[fname] = ff
+	}
 }
 
 // 支持模板自定义扩展函数
@@ -166,7 +183,7 @@ func ExtFuncs(funcs *map[string]TagFunc) {
 	for fname, ff := range *funcs {
 		_, ok := tagFuncs[fname]
 		if ok {
-			panic(fmt.Sprintf("[GKTemplate]tag:%s exists", fname))
+			panic(fmt.Sprintf("[GKTemplate]func:%s exists", fname))
 		}
 		tagFuncs[fname] = ff
 	}
@@ -538,14 +555,24 @@ func ParseStringWithNameSpace(tplstr *string, data D, nameSpace, tagStart, tagEn
 	if data == nil {
 		return "", nil
 	}
-
 	// 替换模板转换内容
-
 	for i := 0; i < gktp.Count; i++ {
-		tagfunc, ok := tagFuncs[gktp.CTags[i].TagName]
+		taglib, ok := tagLibs[gktp.CTags[i].TagName]
 		if ok {
 			gktp.CTags[i].IsReplace = true
-			gktp.CTags[i].TagValue = tagfunc(gktp.CTags[i], &data)
+			gktp.CTags[i].TagValue = taglib(gktp.CTags[i], &data)
+			// 处理自定义函数
+			tplFunc := gktp.CTags[i].GetAttribute("func")
+			if tplFunc != "" {
+				// 解析模板函数
+				funcName, args, err := attr.FuncParser(tplFunc)
+				if err == nil {
+					tagfunc, ok := tagFuncs[funcName]
+					if ok {
+						gktp.CTags[i].TagValue = tagfunc(&gktp.CTags[i].TagValue, args)
+					}
+				}
+			}
 		}
 	}
 
@@ -557,7 +584,7 @@ func ParseStringWithNameSpace(tplstr *string, data D, nameSpace, tagStart, tagEn
 
 	// go func() {
 	// 	for i := 0; i < gktp.Count; i++ {
-	// 		tagfunc, ok := tagFuncs[gktp.CTags[i].TagName]
+	// 		tagfunc, ok := tagLibs[gktp.CTags[i].TagName]
 	// 		if ok {
 	// 			tagFuncChans <- tagFuncChan{
 	// 				Idx:     i,
