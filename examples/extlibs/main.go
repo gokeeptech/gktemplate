@@ -5,36 +5,36 @@ package main
 
 import (
 	"fmt"
-	gktpl "github.com/gokeeptech/gktemplate"
+	gkt "github.com/gokeeptech/gktemplate"
 	"net/http"
 )
 
 func main() {
 	// 设置标签
-	gktpl.SetNameSpace("llgoer", "{", "}")
+	gkt.SetNameSpace("llgoer", "{", "}")
 
 	// 使用扩展函数
-	var funcs = make(map[string]gktpl.TagFunc)
+	var funcs = make(map[string]gkt.TagFunc)
 
 	// test标签
-	funcs["test"] = func(tag *gktpl.GKTag, data *gktpl.D) string {
+	funcs["test"] = func(tag *gkt.GKTag, data *gkt.D) string {
 		name := tag.GetAttribute("name") // 获取属性
 		return "string from testtag name is:" + name
 	}
 
 	// 扩展自定义标签函数
-	gktpl.ExtLibs(&funcs)
+	gkt.ExtLibs(&funcs)
 
 	// 加载模板
-	gktpl.LoadDir("./templates/*.htm")
+	gkt.LoadDir("./templates/*.htm")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		data := gktpl.D{
+		data := gkt.D{
 			"info": "Template engine for GoKeep(GK)，GoKeep模板引擎",
 		}
 
 		// 渲染模板
-		rs, err := gktpl.Parse("templates/simple.htm", data)
+		rs, err := gkt.Parse("templates/simple.htm", data)
 		if err != nil {
 			fmt.Fprintf(w, err.Error())
 			return

@@ -5,20 +5,20 @@ package main
 
 import (
 	"fmt"
-	gktpl "github.com/gokeeptech/gktemplate"
+	gkt "github.com/gokeeptech/gktemplate"
 	"net/http"
 )
 
 func main() {
 	// 加载模板
-	gktpl.LoadDir("./templates/*.htm")
+	gkt.LoadDir("./templates/*.htm")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		data := gktpl.D{
+		data := gkt.D{
 			"info": "Template engine for GoKeep(GK)，GoKeep模板引擎",
 		}
 		// 渲染模板
-		rs, err := gktpl.Parse("templates/simple.htm", data)
+		rs, err := gkt.Parse("templates/simple.htm", data)
 		if err != nil {
 			fmt.Fprintf(w, err.Error())
 			return

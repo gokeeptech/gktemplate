@@ -1,10 +1,11 @@
 // Copyright 2020 The GoKeep Authors. All rights reserved.
 // license that can be found in the LICENSE file.
+
 package main
 
 import (
 	"github.com/gin-gonic/gin"
-	gktpl "github.com/gokeeptech/gktemplate"
+	gkt "github.com/gokeeptech/gktemplate"
 	"log"
 	"os"
 )
@@ -21,13 +22,13 @@ func init() {
 func main() {
 	r := gin.Default()
 	// 加载模板
-	gktpl.LoadDir("./templates/*.htm")
+	gkt.LoadDir("./templates/*.htm")
 	r.GET("/", func(c *gin.Context) {
-		data := gktpl.D{
+		data := gkt.D{
 			"info": "Template engine for GoKeep(GK)，GoKeep模板引擎",
 		}
 		// 渲染模板
-		rs, err := gktpl.Parse("templates/simple.htm", data)
+		rs, err := gkt.Parse("templates/simple.htm", data)
 		if err != nil {
 			log.Println(err)
 		}
