@@ -551,16 +551,13 @@ func ParseStringWithNameSpace(tplstr *string, data D, nameSpace, tagStart, tagEn
 		return "", err
 	}
 
-	// 如果没有data，则无需渲染
-	if data == nil {
-		return "", nil
-	}
 	// 替换模板转换内容
 	for i := 0; i < gktp.Count; i++ {
 		taglib, ok := tagLibs[gktp.CTags[i].TagName]
 		if ok {
 			gktp.CTags[i].IsReplace = true
 			gktp.CTags[i].TagValue = taglib(gktp.CTags[i], &data)
+
 			// 处理自定义函数
 			tplFunc := gktp.CTags[i].GetAttribute("func")
 			if tplFunc != "" {
@@ -604,14 +601,12 @@ func ParseStringWithNameSpace(tplstr *string, data D, nameSpace, tagStart, tagEn
 	ResultString := ""
 	nextTagEnd := 0
 	for i := 0; i < gktp.Count; i++ {
-		if gktp.CTags[i].GetValue() != "" {
-			if gktp.CTags[i].GetValue() == "#@Delete@#" {
-				gktp.CTags[i].TagValue = ""
-			}
-			ResultString += string(gktp.SourceString[nextTagEnd : nextTagEnd+gktp.CTags[i].StartPos-nextTagEnd])
-			ResultString += gktp.CTags[i].GetValue()
-			nextTagEnd = gktp.CTags[i].EndPos
+		if gktp.CTags[i].GetValue() == "#@Delete@#" {
+			gktp.CTags[i].TagValue = ""
 		}
+		ResultString += string(gktp.SourceString[nextTagEnd : nextTagEnd+gktp.CTags[i].StartPos-nextTagEnd])
+		ResultString += gktp.CTags[i].GetValue()
+		nextTagEnd = gktp.CTags[i].EndPos
 	}
 	slen := len(gktp.SourceString)
 	if slen > nextTagEnd {

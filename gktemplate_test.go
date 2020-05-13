@@ -57,6 +57,16 @@ func TestParseString(t *testing.T) {
 	fmt.Println("[TestParseString]result=", rs)
 }
 
+// 测试解析字符串
+func TestParseString1(t *testing.T) {
+
+	rs, err := ParseString(testtpl, nil)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	fmt.Println("[TestParseString1]result=", rs)
+}
+
 // go test -run TestParseFile
 func TestParseFile(t *testing.T) {
 	items := []D{
