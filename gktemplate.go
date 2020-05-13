@@ -10,6 +10,7 @@ import (
 	"fmt"
 	attr "github.com/gokeeptech/gktemplate/attribute"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -139,6 +140,9 @@ func (as *templateFileStorage) SetTemplateFile(k string, v *string) {
 func (as *templateFileStorage) GetTemplateFile(k string) *string {
 	as.RLock()
 	defer as.RUnlock()
+	if os.Getenv("GKENV") == "dev" {
+		return nil
+	}
 	v := as.Items[k]
 	return v
 }
@@ -530,6 +534,7 @@ func ParseFile(filename string, data D) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	log.Println("load file:", filename)
 
 	tplstr := string(d)
 

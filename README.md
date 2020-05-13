@@ -46,6 +46,8 @@ GKTemplate主要用于采用Go编写的HTTP Server中需要自定义呈现数据
 
 使用方法可以参考[examples](./examples)目录中的例子。
 
+如果开启开发模式（模板实时加载），则运行`GKENV=dev go run main.go`
+
 ## 资源
 
 - [Github](https://github.com/gokeeptech/gktemplate)

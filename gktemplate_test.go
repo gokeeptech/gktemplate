@@ -94,6 +94,11 @@ func TestParseFile(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 	fmt.Println("[TestParseFile]result=", rs)
+	rs, err = ParseFile("./testdata/tpl1.htm", data)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	fmt.Println("[TestParseFile]result=", rs)
 }
 
 // 测试加载目录
