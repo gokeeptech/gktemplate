@@ -20,7 +20,7 @@ import (
 
 const CharToLow = true  // 是否将属性名称统一转换成小写
 const TagMaxLen = 64    // 标签最大字符宽度
-const Version = "0.0.6" // 版本号
+const Version = "0.0.9" // 版本号
 
 var (
 	defaultNameSpace = "gk" // 默认标签名称
@@ -120,6 +120,9 @@ func (as *templateStorage) SetTemplate(k string, v *GKTemplate) {
 func (as *templateStorage) GetTemplate(k string) *GKTemplate {
 	as.RLock()
 	defer as.RUnlock()
+	if os.Getenv("GKENV") == "dev" {
+		return nil
+	}
 	v := as.Items[k]
 	return v
 }
